@@ -120,6 +120,7 @@ public class WordNet {
 		if(args.length < 2)
 			throw new java.lang.NullPointerException("lack of arguments!");
 		WordNet wordnet = new WordNet(args[0], args[1]);
+		StdOut.printf("%d Verties, %d Edges", wordnet.G.V(), wordnet.G.E());
 		while (!StdIn.isEmpty()) 
 		{
 			String v = StdIn.readString();
