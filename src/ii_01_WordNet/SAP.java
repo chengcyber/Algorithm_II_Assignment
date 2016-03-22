@@ -104,6 +104,7 @@ public class SAP {
 		{
 			int v = StdIn.readInt();
 			int w = StdIn.readInt();
+			System.out.println(v + ", " + w);
 			int length   = sap.length(v, w);
 			int ancestor = sap.ancestor(v, w);
 			StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
