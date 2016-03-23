@@ -1,10 +1,10 @@
-package ii_01_WordNet;
+
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
@@ -30,33 +30,51 @@ public class WordNet {
 	 */
 	public WordNet(String synsets, String hypernyms) {
 		this.wordMap = new HashMap<String, Bag<Integer> >();
+		this.idMap = new HashMap<Integer, String>();
 		In inSynsets = new In(synsets);
-		String delims = "[,]";
+		String delims = ",";
 		int maxNumber = 0;
 		while (inSynsets.hasNextLine()) {
 			String[] tokens = inSynsets.readLine().split(delims);
 			int wordNumber = Integer.parseInt(tokens[0]);
 			maxNumber = maxInteger(maxNumber, wordNumber);
-			if (!wordMap.containsKey(tokens[1])) {
-				Bag<Integer> bag = new Bag<Integer>();
-				bag.add(wordNumber);
-				wordMap.put(tokens[1], bag);
-			} else {
-				wordMap.get(tokens[1]).add(wordNumber);
+			idMap.put(wordNumber, tokens[1]);
+			String[] nouns = tokens[1].split(" ");
+			for (String noun : nouns) {
+				if (!wordMap.containsKey(noun)) {
+					Bag<Integer> bag = new Bag<Integer>();
+					bag.add(wordNumber);
+					wordMap.put(noun, bag);
+				} else {
+					wordMap.get(noun).add(wordNumber);
+				}
 			}
 		}
 		inSynsets.close();
+		pointToOther = new boolean[maxNumber + 1];
 		this.G = new Digraph(maxNumber + 1);
 		In inHypernyms = new In(hypernyms);
 		while (inHypernyms.hasNextLine()) {
 			String[] tokens = inHypernyms.readLine().split(delims);
 			int v = Integer.parseInt(tokens[0]);
+			if (tokens.length >= 1) pointToOther[v] = true;
 			for (int i = 1; i < tokens.length; i++) {
 				int w = Integer.parseInt(tokens[i]);
 				G.addEdge(v, w);
 			}
 		}
 		inHypernyms.close();
+		/* Using DirectedCycle Class to check DAG */
+		finder = new DirectedCycle(G);
+		if (finder.hasCycle())
+			throw new java.lang.IllegalArgumentException("Digraph has cycle");
+		/* Using pointToOther to check multi-root */
+		int countRoot = 0;
+		for (boolean bool : pointToOther) {
+			if (!bool) countRoot++;
+		}
+		if (countRoot >=2)
+			throw new java.lang.IllegalArgumentException("Digraph has multi-root");
 		sap = new SAP(G);
 	}
 
@@ -75,6 +93,8 @@ public class WordNet {
 	 * @return true if word is a WordNet noun. otherwise false;
 	 */
 	public boolean isNoun(String word) {
+		if (word == null)
+			throw new java.lang.NullPointerException();
 		if (wordMap.isEmpty()) return false;
 		return wordMap.containsKey(word);
 	}
@@ -86,6 +106,14 @@ public class WordNet {
 	 * @return distance between nounA and nounB (defined below)
 	 */
 	public int distance(String nounA, String nounB) {
+		if (nounA == null || nounB == null)
+			throw new java.lang.NullPointerException();
+		if (!isNoun(nounA)){  
+            throw new java.lang.IllegalArgumentException(nounA);  
+        }  
+        if (!isNoun(nounB)){  
+            throw new java.lang.IllegalArgumentException(nounB);  
+        }  
 		return sap.length(wordMap.get(nounA), wordMap.get(nounB));
 	}
 
@@ -96,20 +124,17 @@ public class WordNet {
 	 * @return the common ancestor of nounA and nounB in a shortest ancestral path
 	 */
 	public String sap(String nounA, String nounB) {
-		String result = "";
+		if (nounA == null || nounB == null)
+			throw new java.lang.NullPointerException();
+		if (!isNoun(nounA)){  
+            throw new java.lang.IllegalArgumentException(nounA);  
+        }  
+        if (!isNoun(nounB)){  
+            throw new java.lang.IllegalArgumentException(nounB);  
+        }  
 		int ancestor = sap.ancestor(wordMap.get(nounA), wordMap.get(nounB));
-		boolean isFind = false;
-		for(Entry<String, Bag<Integer> > entry : wordMap.entrySet()) {
-			for (int x : entry.getValue()) {
-				if (x == ancestor) {
-					result = entry.getKey();
-					isFind = true;
-				}
-				if (isFind) break;
-			}
-			if (isFind) break;
-		}
-		return result;
+		if (ancestor < 0) return "no ancestor"; 
+		return idMap.get(ancestor);
 	}
 
 	/**
@@ -145,6 +170,9 @@ public class WordNet {
 	
 	/* Private instance variables */
 	private HashMap<String, Bag<Integer> > wordMap;		/* HashMap for noun to ints. */
+	private HashMap<Integer, String> idMap;				/* HashMap for int to nouns  */
 	private Digraph G;									/* instance of Digraph */
 	private SAP sap;									/* instance of SAP */
+	private DirectedCycle finder;						/* instance of DirectedCycle */
+	private boolean pointToOther[];						/* array for every number check is(or not) point to other */
 }

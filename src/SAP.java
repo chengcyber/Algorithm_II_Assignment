@@ -1,4 +1,4 @@
-package ii_01_WordNet;
+
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
@@ -80,6 +80,8 @@ public class SAP {
 	 */
 	public int length(Iterable<Integer> v, Iterable<Integer> w)
 	{
+		if (v == null || w == null)
+			throw new java.lang.NullPointerException();
 		for(int x : v)
 			validateVertex(x);
 		for(int y : w)
@@ -108,6 +110,8 @@ public class SAP {
 	 */
 	public int ancestor(Iterable<Integer> v, Iterable<Integer> w)
 	{
+		if (v == null || w == null)
+			throw new java.lang.NullPointerException();
 		for(int x : v)
 			validateVertex(x);
 		for(int y : w)
