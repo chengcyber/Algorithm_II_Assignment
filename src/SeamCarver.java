@@ -2,11 +2,18 @@ import java.awt.Color;
 
 import edu.princeton.cs.algs4.Picture;
 
+
 public class SeamCarver {
 		// create a seam carver object based on the given picture
 		public SeamCarver(Picture picture) {
 			p = new Picture(picture);
 			energy = new double[p.height()][p.width()];
+			color = new Color[p.height()][p.width()];
+			for(int i = 0; i < p.height() ; i++) {
+				for(int j = 0; j < p.width(); j++) {
+					color[i][j] = p.get(j, i);
+				}
+			}
 		}              
 		// current picture
 		public Picture picture() {
@@ -14,11 +21,13 @@ public class SeamCarver {
 		}                         
 		// width of current picture
 		public     int width() {
-			return p.width();
+//			return p.width();
+			return color[0].length;
 		}                           
 		// height of current picture
 		public     int height() {
-			return p.height();
+//			return p.height();
+			return color.length;
 		}                          
 		// energy of pixel at column x and row y
 		public  double energy(int x, int y) {
@@ -33,21 +42,94 @@ public class SeamCarver {
 		}              
 		// sequence of indices for horizontal seam
 		public   int[] findHorizontalSeam() {
-			calEnergy();
+			
 			return null;
 		}              
 		// sequence of indices for vertical seam
 		public   int[] findVerticalSeam() {
-			return null;
+			calEnergy();
+			int[] seam = new int[p.height()];
+			boolean[][] marked = new boolean[p.height()][p.width()];
+			double[][] sumEnergy = new double[p.height()][p.width()];
+			int[][] nextTo = new int[p.height()][p.width()];
+			for(int i = 0; i < p.width(); i++) {
+				dfsEnergy(i, 0, nextTo, sumEnergy, marked);
+			}
+			int minSumEnergyIndex = getMinIndex(sumEnergy[0]);
+			seam[0] = minSumEnergyIndex;
+			for (int i = 1; i < seam.length; i++) {
+				seam[i] = nextTo[i - 1][seam[i - 1]];
+			}
+			return seam;
 		}                
 		// remove horizontal seam from current picture
-		public    void removeHorizontalSeam(int[] seam) {}  
+		public void removeHorizontalSeam(int[] seam) {
+			
+		}  
 		// remove vertical seam from current picture
-		public    void removeVerticalSeam(int[] seam) {}
+		public void removeVerticalSeam(int[] seam) {
+			Picture pic = new Picture(p.width() - 1, p.height());
+			for (int col = 0; col < p.width() - 1; col++) {
+				for (int row = 0; row < p.height(); row++) {
+					
+				}
+			}
+		}
 
 
 		
 		/* Private Section */
+		private void dfsEnergy(int x, int y, int[][] nextTo, 
+				double[][] sumEnergy, boolean[][] marked) {
+			if (marked[y][x]) return;
+			if (y == p.height() - 1) {
+				sumEnergy[y][x] = energy[y][x];
+				marked[y][x] = true;
+				return;
+			}
+			int py = y + 1;
+			for(int px : getNextX(x, y)) {
+				dfsEnergy(px, py, nextTo, sumEnergy, marked);
+				if (sumEnergy[y][x] == 0 || (sumEnergy[y][x] > sumEnergy[py][px] + energy[y][x])) {
+					sumEnergy[y][x] = sumEnergy[py][px] + energy[y][x];
+					nextTo[y][x] = px;
+				}
+			}
+			marked[y][x] = true;
+		}
+		
+		private int[] getNextX(int x, int y) {
+			int[] result;
+			if (x == 0) {
+				result = new int[2];
+				result[0] = x;
+				result[1] = x + 1;
+			} else if (x == p.width() - 1) {
+				result = new int[2];
+				result[0] = x - 1;
+				result[1] = x;
+			} else {
+				result = new int[3];
+				result[0] = x - 1;
+				result[1] = x;
+				result[2] = x + 1;
+			}
+				
+			return result;
+		}
+		
+		private int getMinIndex(double[] candidate) {
+			int index = -1;
+			double minNumber = Double.MAX_VALUE;
+			for (int i = 0; i < candidate.length; i++) {
+				if (candidate[i] < minNumber) {
+					index = i;
+					minNumber = candidate[i];
+				}
+			}
+			return index;
+		}
+		
 		private void calEnergy() {
 			for (int i = 0; i < energy.length; i++) {
 				for (int j = 0; j < energy[0].length; j++) {
@@ -66,5 +148,6 @@ public class SeamCarver {
 
 		/* Private instance variables */
 		Picture p;
+		Color[][] color;
 		double[][] energy;
 }
