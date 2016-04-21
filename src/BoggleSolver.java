@@ -1,3 +1,4 @@
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -13,6 +14,7 @@ public class BoggleSolver {
 		for(String str : dictionary) {
 			lex.put(str, true);
 		}
+		
 	}
 	// Returns the set of all valid words in the given Boggle board, as an Iterable.
 	public Iterable<String> getAllValidWords(BoggleBoard board) {
@@ -26,6 +28,12 @@ public class BoggleSolver {
 		}
 		Set<String> words = new TreeSet<String>();
 		boolean[][] marked = new boolean[row][col];
+		String word = "";
+		for (int i = 0; i < row; i++) {
+			for (int j = 0; j < col; j++) {
+				dfs(boggle, i, j, word, words, marked);
+			}
+		}
 		return words;
 	}
 	// Returns the score of the given word if it is in the dictionary, zero otherwise.
@@ -53,14 +61,15 @@ public class BoggleSolver {
 	    In in = new In(args[0]);
 	    String[] dictionary = in.readAllStrings();
 	    BoggleSolver solver = new BoggleSolver(dictionary);
-	    BoggleBoard board = new BoggleBoard(args[1]);
-	    int score = 0;
-	    for (String word : solver.getAllValidWords(board))
-	    {
-	        StdOut.println(word);
-	        score += solver.scoreOf(word);
-	    }
-	    StdOut.println("Score = " + score);
+	     BoggleBoard board = new BoggleBoard(args[1]);
+	     int score = 0;
+	     for (String word : solver.getAllValidWords(board))
+	     {
+	         StdOut.println(word);
+	         score += solver.scoreOf(word);
+	     }
+	     StdOut.println("Score = " + score);
+
 	}
 	
 	/* Private Section */
@@ -68,30 +77,30 @@ public class BoggleSolver {
 		if (marked[i][j]) return;
 		marked[i][j] = true;
 		word = word + boggle[i][j];
-		if (lex.get(word)) {
+		if (!lex.keysWithPrefix(word).iterator().hasNext()) return;
+		if (lex.contains(word)) {
 			words.add(word);
 		}
-		if (lex.contains)
-		for (Coordinate coord : getNeigbours(i, j, boggle.length, boggle[0].length)) {
-
-			dfs(boggle)
+		for (Coordinate coord : getNeighbors(i, j, boggle.length, boggle[0].length)) {
+			dfs(boggle, coord.getX(), coord.getY(), word, words, marked);
 		}
-
+		marked[i][j] = false;
+		word = word.substring(0, word.length() - 1);
 	}
 
-	private Iterable<Coordinate> getNeigbours(int i, int j, int row, int col) {
-		Set<Coordinate> neigbours = new TreeSet<Coordinate>();
+	private Iterable<Coordinate> getNeighbors(int i, int j, int row, int col) {
+		Set<Coordinate> neighbors = new HashSet<Coordinate>();
 		for (int dx = -1; dx <= 1; dx++) {
 			int x = i + dx;
 			if(x < 0 || x >= row) continue;
 			for (int dy = -1; dy <= 1; dy++) {
 				int y = i + dy;
 				if (y < 0 || y >= col) continue;
-				Coordinate coord = new Coordinate(i + dx, j + dy);
-				neigbours.add(coord);
+				if (x == i && y == j) continue;
+				neighbors.add(new Coordinate(x, y));
 			}
 		}
-		return neigbours;
+		return neighbors;
 	}
 
 
