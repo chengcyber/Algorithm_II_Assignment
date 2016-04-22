@@ -1,4 +1,4 @@
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -76,30 +76,44 @@ public class BoggleSolver {
 	private void dfs(char[][] boogle, int i, int j, String word, Set<String> words, boolean[][] marked) {
 		if (marked[i][j]) return;
 		marked[i][j] = true;
-		word = word + boggle[i][j];
-		if (!lex.keysWithPrefix(word).iterator().hasNext()) return;
-		if (lex.contains(word)) {
-			words.add(word);
+		if (boggle[i][j] == 'Q') {
+			word += "QU";
+		} else {
+			word = word + boggle[i][j];
 		}
-		for (Coordinate coord : getNeighbors(i, j, boggle.length, boggle[0].length)) {
-			dfs(boggle, coord.getX(), coord.getY(), word, words, marked);
+		if (lex.keysWithPrefix(word).iterator().hasNext()) {
+			if (lex.contains(word)) {
+				words.add(word);
+			}
+			for (Coordinate coord : getNeighbors(i, j, boggle.length, boggle[0].length)) {
+				dfs(boggle, coord.getX(), coord.getY(), word, words, marked);
+			}
 		}
-		marked[i][j] = false;
-		word = word.substring(0, word.length() - 1);
+ 		marked[i][j] = false;
+ 		if (word.charAt(word.length() - 2) == 'Q') {
+ 			word = word.substring(0, word.length() - 2);
+ 		} else {
+			word = word.substring(0, word.length() - 1);
+ 		}
 	}
 
 	private Iterable<Coordinate> getNeighbors(int i, int j, int row, int col) {
-		Set<Coordinate> neighbors = new HashSet<Coordinate>();
+		ArrayList<Coordinate> neighbors = new ArrayList<Coordinate>();
 		for (int dx = -1; dx <= 1; dx++) {
 			int x = i + dx;
 			if(x < 0 || x >= row) continue;
 			for (int dy = -1; dy <= 1; dy++) {
-				int y = i + dy;
+				int y = j + dy;
 				if (y < 0 || y >= col) continue;
 				if (x == i && y == j) continue;
 				neighbors.add(new Coordinate(x, y));
 			}
 		}
+//		System.out.println(i + ", " + j);
+//		for (Coordinate coord : neighbors) {
+//			System.out.println(coord.getX() + ".. " + coord.getY());
+//		}
+//		System.out.println();
 		return neighbors;
 	}
 
