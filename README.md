@@ -28,3 +28,14 @@ Princeton Algorithm Part II in www.coursera.org
 		http://coursera.cs.princeton.edu/algs4/checklists/baseball.html
 	Code:
         BaseballElimination.java
+
+## 4.Boggle
+###
+	Specification:
+		https://class.coursera.org/algs4partII-007/assignment/view?assignment_id=15
+		http://coursera.cs.princeton.edu/algs4/assignments/boggle.html
+		http://coursera.cs.princeton.edu/algs4/checklists/boggle.html
+	Code:
+	BoggleBoard.java
+	BoggleSolver.java
+	BoggleGame.java
