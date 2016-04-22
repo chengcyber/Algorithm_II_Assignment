@@ -36,6 +36,6 @@ Princeton Algorithm Part II in www.coursera.org
 		http://coursera.cs.princeton.edu/algs4/assignments/boggle.html
 		http://coursera.cs.princeton.edu/algs4/checklists/boggle.html
 	Code:
-	BoggleBoard.java
-	BoggleSolver.java
-	BoggleGame.java
+		BoggleBoard.java
+		BoggleSolver.java
+		BoggleGame.java
