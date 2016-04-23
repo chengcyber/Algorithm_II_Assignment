@@ -24,6 +24,11 @@ public class Lexicon {
 		if (n == null) return false;
 		return n.isWord;
 	}
+
+	public Node getNode(String word) {
+		if (word.equals("")) return root;
+		return get(root, word, 0);
+	}
 	
 	public boolean containsPrefix(String prefix) {
 		Node n = get(root, prefix, 0);
@@ -35,7 +40,7 @@ public class Lexicon {
 		put(root, word, 0);
 	}
 	
-	private static class Node{
+	public static class Node{
 		boolean isWord;
 		Node[] next = new Node[R];
 	}

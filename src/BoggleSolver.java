@@ -19,6 +19,7 @@ public class BoggleSolver {
 		for(String str : dictionary) {
 			lex.put(str);
 		}
+//		System.out.println(lex.getNode("AA").isWord);
 	}
 	
 	/**
@@ -40,14 +41,11 @@ public class BoggleSolver {
 		boolean[][] marked = new boolean[row][col];
 		for (int i = 0; i < row; i++) {
 			for (int j = 0; j < col; j++) {
-				String word = "";
-				if (boggle[i][j] == 'Q') {
-					word = "QU";
-				} else {
-					word += boggle[i][j];
-				}
+				StringBuilder sb = new StringBuilder();
+				sb.append(boggle[i][j]);
+				if (boggle[i][j] == 'Q') sb.append("U");
 				marked[i][j] = true;
-				dfs(boggle, i, j, word, words, marked);
+				dfs(boggle, i, j, sb, words, marked);
 				marked[i][j] = false;
 			}
 		}
@@ -110,30 +108,25 @@ public class BoggleSolver {
 	}
 	
 	/* Private Section */
-	private void dfs(char[][] boogle, int i, int j, String word, Set<String> words, boolean[][] marked) {
-		// if (word.length() >= 3 && lex.get(word)) {
-		if (word.length() >= 3 && lex.contains(word)) {
-			words.add(word);
+	private void dfs(char[][] boogle, int i, int j, StringBuilder word, Set<String> words, boolean[][] marked) {
+		if (word.length() >= 3 && lex.contains(word.toString())) {
+			words.add(word.toString());
 		}
 		for (Coordinate coord : getNeighbors(i, j, boggle.length, boggle[0].length)) {
 			int x = coord.getX();
 			int y = coord.getY();
-			if (boggle[x][y] == 'Q') {
-				word += "QU";
-			} else {
-				word = word + boggle[x][y];
-			}
-			if (!marked[x][y] &&  lex.containsPrefix(word)) {
+			word.append(boggle[x][y]);
+			if(boggle[x][y] == 'Q') word.append("U");
+			if (!marked[x][y] &&  lex.containsPrefix(word.toString())) {
 			// if (!marked[x][y] &&  (lex.get(word) != null)) {
 				marked[x][y] = true;
 				dfs(boggle, coord.getX(), coord.getY(), word, words, marked);
 				marked[x][y] = false;
 			}
-			if (word.length() >= 2 && (word.charAt(word.length() - 2) == 'Q')) {
-	 			word = word.substring(0, word.length() - 2);
-	 		} else {
-				word = word.substring(0, word.length() - 1);
-	 		}
+			word.deleteCharAt(word.length() - 1);
+			if (word.length() >= 2 && (word.charAt(word.length() - 1) == 'Q')) {
+				word.deleteCharAt(word.length() - 1);
+			}
 		}
 	}
 
