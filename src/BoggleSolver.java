@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
@@ -28,9 +30,11 @@ public class BoggleSolver {
 		int row = board.rows();
 		int col = board.cols();
 		boggle = new char[row][col];
+		adjs = new ArrayList<Iterable<Coordinate>>();
 		for (int i = 0;i < row; i++) {
 			for (int j = 0;j < col; j++) {
 				boggle[i][j] = board.getLetter(i,j);
+				adjs.add(getNeighbors(i, j, row, col));
 			}
 		}
 //		displayBoard(boggle);
@@ -121,7 +125,7 @@ public class BoggleSolver {
 			n.isDetected = true;
 			nodes.add(n);
 		}
-		for (Coordinate coord : getNeighbors(i, j, boggle.length, boggle[0].length)) {
+		for (Coordinate coord : adjs.get(i * boggle.length + j)) {
 			int x = coord.x;
 			int y = coord.y;
 			word.append(boggle[x][y]);
@@ -162,6 +166,7 @@ public class BoggleSolver {
 	/* Private instance variables */
 	private Lexicon lex;
 	private char[][] boggle;
+	private ArrayList<Iterable<Coordinate>> adjs;
 
 	private static class Coordinate {
 		public Coordinate(int x, int y) {
