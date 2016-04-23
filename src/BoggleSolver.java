@@ -125,7 +125,7 @@ public class BoggleSolver {
 			n.isDetected = true;
 			nodes.add(n);
 		}
-		for (Coordinate coord : adjs.get(i * boggle.length + j)) {
+		for (Coordinate coord : adjs.get(i * boggle[0].length + j)) {
 			int x = coord.x;
 			int y = coord.y;
 			word.append(boggle[x][y]);
