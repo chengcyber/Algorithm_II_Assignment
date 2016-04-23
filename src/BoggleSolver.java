@@ -1,6 +1,3 @@
-import java.util.HashSet;
-import java.util.Set;
-
 import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
@@ -19,7 +16,6 @@ public class BoggleSolver {
 		for(String str : dictionary) {
 			lex.put(str);
 		}
-//		System.out.println(lex.getNode("AA").isWord);
 	}
 	
 	/**
@@ -37,17 +33,27 @@ public class BoggleSolver {
 				boggle[i][j] = board.getLetter(i,j);
 			}
 		}
-		Set<String> words = new HashSet<String>();
+//		displayBoard(boggle);
+		Bag<String> words = new Bag<String>();
+		Bag<LexNode> nodes = new Bag<LexNode>();
 		boolean[][] marked = new boolean[row][col];
 		for (int i = 0; i < row; i++) {
 			for (int j = 0; j < col; j++) {
 				StringBuilder sb = new StringBuilder();
 				sb.append(boggle[i][j]);
-				if (boggle[i][j] == 'Q') sb.append("U");
+				LexNode n = lex.getLexNode(sb.toString());
+				if (n == null) continue;
+				if (boggle[i][j] == 'Q') {
+					sb.append("U");
+					n = n.next['U' - 'A'];
+				}
 				marked[i][j] = true;
-				dfs(boggle, i, j, sb, words, marked);
+				dfs(boggle, i, j, n, nodes, sb, words, marked);
 				marked[i][j] = false;
 			}
+		}
+		for (LexNode n : nodes) {
+			n.isDetected = false;
 		}
 		return words;
 	}
@@ -108,19 +114,26 @@ public class BoggleSolver {
 	}
 	
 	/* Private Section */
-	private void dfs(char[][] boogle, int i, int j, StringBuilder word, Set<String> words, boolean[][] marked) {
-		if (word.length() >= 3 && lex.contains(word.toString())) {
+	private void dfs(char[][] boogle, int i, int j, LexNode n, Bag<LexNode> nodes, StringBuilder word, Bag<String> words, boolean[][] marked) {
+//		System.out.println("current: " + i + ", " + j + ", " + word.toString());
+		if (word.length() >= 3 && n.isWord && !n.isDetected) {
 			words.add(word.toString());
+			n.isDetected = true;
+			nodes.add(n);
 		}
 		for (Coordinate coord : getNeighbors(i, j, boggle.length, boggle[0].length)) {
-			int x = coord.getX();
-			int y = coord.getY();
+			int x = coord.x;
+			int y = coord.y;
 			word.append(boggle[x][y]);
-			if(boggle[x][y] == 'Q') word.append("U");
-			if (!marked[x][y] &&  lex.containsPrefix(word.toString())) {
-			// if (!marked[x][y] &&  (lex.get(word) != null)) {
+			LexNode nextN = n.next[boggle[x][y] - 'A'];
+			if(boggle[x][y] == 'Q') {
+				word.append("U");
+				if (nextN != null)
+					nextN = nextN.next['U' - 'A'];
+			}
+			if (!marked[x][y] &&  nextN != null) {
 				marked[x][y] = true;
-				dfs(boggle, coord.getX(), coord.getY(), word, words, marked);
+				dfs(boggle, coord.x, coord.y, nextN, nodes, word, words, marked);
 				marked[x][y] = false;
 			}
 			word.deleteCharAt(word.length() - 1);
@@ -149,19 +162,24 @@ public class BoggleSolver {
 	/* Private instance variables */
 	private Lexicon lex;
 	private char[][] boggle;
+
+	private static class Coordinate {
+		public Coordinate(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+		int x;
+		int y;
+	}
+	
+//	private void displayBoard(char[][] boogle) {
+//		for (int i = 0; i < boggle.length; i++) {
+//			for (int j = 0; j < boggle[0].length; j++) {
+//				System.out.print(boggle[i][j] + " ");
+//			}
+//			System.out.println();
+//		}
+//	}
 }
 
-class Coordinate {
-	public Coordinate(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-	public int getX() {
-		return x;
-	}
-	public int getY() {
-		return y;
-	}
-	private int x;
-	private int y;
-}
+

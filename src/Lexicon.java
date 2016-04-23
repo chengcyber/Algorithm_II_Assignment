@@ -1,7 +1,7 @@
 
 public class Lexicon {
 	public Lexicon() {
-		root = new Node();
+		root = new LexNode();
 	}
 	
 	public static void main(String[] args) {
@@ -20,18 +20,18 @@ public class Lexicon {
 	}
 	
 	public boolean contains(String word) {
-		Node n = get(root, word, 0);
+		LexNode n = get(root, word, 0);
 		if (n == null) return false;
 		return n.isWord;
 	}
 
-	public Node getNode(String word) {
+	public LexNode getLexNode(String word) {
 		if (word.equals("")) return root;
 		return get(root, word, 0);
 	}
 	
 	public boolean containsPrefix(String prefix) {
-		Node n = get(root, prefix, 0);
+		LexNode n = get(root, prefix, 0);
 		return n != null;
 	}
 	
@@ -40,16 +40,11 @@ public class Lexicon {
 		put(root, word, 0);
 	}
 	
-	public static class Node{
-		boolean isWord;
-		Node[] next = new Node[R];
-	}
-	
-	private void put(Node cur, String word, int d) {
+	private void put(LexNode cur, String word, int d) {
 		char c = Character.toUpperCase(word.charAt(d));
 		int childIndex = c - 'A';
 		if (cur.next[childIndex] == null) {
-			cur.next[childIndex] = new Node();
+			cur.next[childIndex] = new LexNode();
 		}
 		if (d == word.length() - 1) {
 			cur.next[childIndex].isWord = true;
@@ -58,7 +53,7 @@ public class Lexicon {
 		}
 	}
 	
-	private Node get(Node cur, String word, int d) {
+	private LexNode get(LexNode cur, String word, int d) {
 		if (cur == null) return null;
  		if (d == word.length()) {
 			return cur;
@@ -68,7 +63,6 @@ public class Lexicon {
 		return get(cur.next[childIndex], word, ++d);
 	}
 	
-	private static final int R = 26;
-	private Node root;
+	private LexNode root;
 	private int N;
 }
