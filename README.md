@@ -39,3 +39,13 @@ Princeton Algorithm Part II in www.coursera.org
 		BoggleBoard.java
 		BoggleSolver.java
 		BoggleGame.java
+		Lexicon.java
+		LexNode.java
+## 5.Burrows-Wheeler
+###
+	Specification:
+		https://class.coursera.org/algs4partII-007/assignment/view?assignment_id=13
+		http://coursera.cs.princeton.edu/algs4/assignments/burrows.html
+		http://coursera.cs.princeton.edu/algs4/checklists/burrows.html
+	Code:
+		BurrowsWheeler.java
