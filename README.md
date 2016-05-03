@@ -48,4 +48,6 @@ Princeton Algorithm Part II in www.coursera.org
 		http://coursera.cs.princeton.edu/algs4/assignments/burrows.html
 		http://coursera.cs.princeton.edu/algs4/checklists/burrows.html
 	Code:
+		MoveToFront.java
 		BurrowsWheeler.java
+		CircularSuffixArray.java
