@@ -2,58 +2,47 @@ import edu.princeton.cs.algs4.BinaryStdIn;
 import edu.princeton.cs.algs4.BinaryStdOut;
 
 public class MoveToFront {
-    // apply move-to-front encoding, reading from standard input and writing to standard output
-//     public static void encode() {
-//     	String s = BinaryStdIn.readString();
-//         char[] input = s.toCharArray();
+	
+    /* Private instance variables */   
+	private static final int R = 256;
+   	private static int[] org,serial;
 
-// //        int[] serial = new int[R];
-// //        for (int i = 0; i < R; i++) {
-// //            serial[i] = i;
-// //        }
+   	static {
+   		org = new int[R];
+   		serial = new int[R];
+		for (int i = 0; i < R; i++) {
+			org[i] = i;
+		}
+   	}
 
-//         BinaryStdOut.write(input.length);
-        
-//         for (int i = 0; i < input.length; i++) {
-// //        	BinaryStdOut.write((char)mtf(serial, input[i]), 8);
-//         	BinaryStdOut.write(input[i]);
-//         }
-
-//         BinaryStdOut.close();
-//     }
-
-
-
-    private static char[] ori, seq;
+    public MoveToFront() {}
     
-    static {
-        ori = new char[256];
-        seq = new char[256];
-        for (char i = 0; i < 256; i++)
-            ori[i] = i;
-    }
-    
-    // apply move-to-front encoding, 
-    // reading from standard input and writing to standard output
+   // apply move-to-front encoding, reading from standard input and writing to standard output
     public static void encode() {
-        System.arraycopy(ori, 0, seq, 0, 256);
-        while (!BinaryStdIn.isEmpty()) {
-            int idx = 0;
-            char c = BinaryStdIn.readChar();
-            for (; idx < 256; idx++) 
-                if (seq[idx] == c) break;
-            BinaryStdOut.write(idx, 8);
-            System.arraycopy(seq, 0, seq, 1, idx);
-            seq[0] = c;
+    	String s = BinaryStdIn.readString();
+        char[] input = s.toCharArray();
+
+        System.arraycopy(org, 0, serial, 0, R);
+        for (int i = 0; i < input.length; i++) {
+      		BinaryStdOut.write(mtf(serial, input[i]), 8);
         }
         BinaryStdOut.close();
     }
 
-
-
     // apply move-to-front decoding, reading from standard input and writing to standard output
     public static void decode() {
-    	
+    	String s = BinaryStdIn.readString();
+    	char[] input = s.toCharArray();
+
+    	System.arraycopy(org, 0, serial, 0, R);
+    	for (int i = 0; i < input.length; i++) {
+    		int index = input[i];
+    		int temp = serial[index];
+	    	System.arraycopy(serial, 0, serial, 1, index);
+	    	serial[0] = temp;
+	    	BinaryStdOut.write(temp, 8);
+    	}
+    	BinaryStdOut.close();
     }
 
     // if args[0] is '-', apply move-to-front encoding
@@ -70,22 +59,15 @@ public class MoveToFront {
     	for (int i = 0; i < serial.length; i++) {
     		if (input == serial[i]) {
     			index = i;
-    			
     			break;
     		}
     	}
-    	System.out.println("inputchar:" + input);
-    	System.out.println("index:" + index);
-        for (int i = index; i > 0; i--) {
-            int temp = serial[i];
-            serial[i] = serial[i - 1];
-            serial[i - 1] = temp;
-        }
+    	int temp = serial[index];
+    	System.arraycopy(serial, 0, serial, 1, index);
+    	serial[0] = temp;
         return index;
     }
-    
-    private MoveToFront() {}
 
-    /* Private instance variables */
-    private static final int R = 256;
+
+    
 }
